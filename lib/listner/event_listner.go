@@ -3,7 +3,7 @@ package listner
 import (
 	"encoding/json"
 	"errors"
-	"go-bot-test/config"
+	"go-bot-test/config/env"
 	"io"
 	"io/ioutil"
 	"log"
@@ -69,7 +69,7 @@ func verificateUrl(w http.ResponseWriter, body []byte) {
 
 func ListenEvent(routes []EventRoute) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		verifier, err := slack.NewSecretsVerifier(r.Header, config.SLACK_SIGNING_SECRET)
+		verifier, err := slack.NewSecretsVerifier(r.Header, env.SLACK_SIGNING_SECRET)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

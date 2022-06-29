@@ -1,11 +1,11 @@
 package api
 
 import (
-	"go-bot-test/config"
+	"go-bot-test/config/env"
 
 	"github.com/slack-go/slack"
 )
 
 var (
-	Shared = slack.New(config.SLACK_BOT_TOKEN)
+	Shared = slack.New(env.SLACK_BOT_TOKEN)
 )
