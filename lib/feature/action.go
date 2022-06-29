@@ -27,7 +27,7 @@ func actionIsMatchingToRoute(payload slack.InteractionCallback, action Action) b
 			return false
 		}
 		blockAction := payload.ActionCallback.BlockActions[0]
-		path := strings.Split(blockAction.BlockID, ":")[0]
+		path := strings.Split(blockAction.BlockID, ":")[1]
 		return path == action.Key
 	}
 	return false
