@@ -46,7 +46,7 @@ func handleAction(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, route := range routes.Rounting {
 		if actionIsMatchingToRoute(*payload, route) {
-			_, error := route.Feature.RunAction(*payload)
+			error := route.Feature.RunAction(*payload)
 			if error != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
