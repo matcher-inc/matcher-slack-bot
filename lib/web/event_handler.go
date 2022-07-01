@@ -49,7 +49,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	case slackevents.CallbackEvent:
 		for _, route := range routes.Rounting {
 			if eventIsMatchingToRoute(eventsAPIEvent, route) {
-				error := route.Feature.RunEvent(eventsAPIEvent)
+				_, error := route.Feature.RunEvent(eventsAPIEvent)
 				if error != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
