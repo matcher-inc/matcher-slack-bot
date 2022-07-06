@@ -11,7 +11,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func confirmDeploymentActionCallback(payload slack.InteractionCallback) error {
+func confirmDeploymentActionCallback(routePath string, payload slack.InteractionCallback) error {
 	action := payload.ActionCallback.BlockActions[0]
 	if strings.HasPrefix(action.Value, "v") {
 		version := action.Value

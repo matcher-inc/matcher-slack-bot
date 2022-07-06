@@ -15,7 +15,7 @@ var event = feature.MentionEvent{
 	Callback: eventCallback,
 }
 
-func eventCallback(event *slackevents.AppMentionEvent) error {
+func eventCallback(routePath string, event *slackevents.AppMentionEvent) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
 	textSection := slack.NewSectionBlock(text, nil, nil)
 
@@ -29,7 +29,7 @@ func eventCallback(event *slackevents.AppMentionEvent) error {
 	placeholder := slack.NewTextBlockObject(slack.PlainTextType, "Select version", false, false)
 	selectMenu := slack.NewOptionsSelectBlockElement(slack.OptTypeStatic, placeholder, "", options...)
 
-	actionBlock := slack.NewActionBlock(actions.SelectVersionAction.Key, selectMenu)
+	actionBlock := slack.NewActionBlock(routePath+":"+actions.SelectVersionAction.Key, selectMenu)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)

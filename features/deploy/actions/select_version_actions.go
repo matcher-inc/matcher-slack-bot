@@ -9,7 +9,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func selectVersionActionCallback(payload slack.InteractionCallback) error {
+func selectVersionActionCallback(routePath string, payload slack.InteractionCallback) error {
 	action := payload.ActionCallback.BlockActions[0]
 	version := action.SelectedOption.Value
 
@@ -25,7 +25,7 @@ func selectVersionActionCallback(payload slack.InteractionCallback) error {
 	denyButton := slack.NewButtonBlockElement("", "deny", denyButtonText)
 	denyButton.WithStyle(slack.StyleDanger)
 
-	actionBlock := slack.NewActionBlock(ConfirmDeploymentAction.Key, confirmButton, denyButton)
+	actionBlock := slack.NewActionBlock(routePath+":"+ConfirmDeploymentAction.Key, confirmButton, denyButton)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
