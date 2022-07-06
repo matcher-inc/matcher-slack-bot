@@ -2,13 +2,18 @@ package deploy
 
 import (
 	"errors"
-	"go-bot-test/app/constants"
+	"go-bot-test/features/deploy/actions"
 	"go-bot-test/lib/api"
+	"go-bot-test/lib/feature"
 	"log"
 
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 )
+
+var event = feature.MentionEvent{
+	Callback: eventCallback,
+}
 
 func eventCallback(event *slackevents.AppMentionEvent) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
@@ -24,7 +29,7 @@ func eventCallback(event *slackevents.AppMentionEvent) error {
 	placeholder := slack.NewTextBlockObject(slack.PlainTextType, "Select version", false, false)
 	selectMenu := slack.NewOptionsSelectBlockElement(slack.OptTypeStatic, placeholder, "", options...)
 
-	actionBlock := slack.NewActionBlock(constants.SelectVersionAction, selectMenu)
+	actionBlock := slack.NewActionBlock(actions.SelectVersionAction.Key, selectMenu)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)

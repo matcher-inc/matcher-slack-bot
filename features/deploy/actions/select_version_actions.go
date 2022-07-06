@@ -3,14 +3,13 @@ package actions
 import (
 	"errors"
 	"fmt"
-	"go-bot-test/app/constants"
 	"go-bot-test/lib/api"
 	"log"
 
 	"github.com/slack-go/slack"
 )
 
-func SelectVersionActionCallback(payload slack.InteractionCallback) error {
+func selectVersionActionCallback(payload slack.InteractionCallback) error {
 	action := payload.ActionCallback.BlockActions[0]
 	version := action.SelectedOption.Value
 
@@ -26,7 +25,7 @@ func SelectVersionActionCallback(payload slack.InteractionCallback) error {
 	denyButton := slack.NewButtonBlockElement("", "deny", denyButtonText)
 	denyButton.WithStyle(slack.StyleDanger)
 
-	actionBlock := slack.NewActionBlock(constants.ConfirmDeploymentAction, confirmButton, denyButton)
+	actionBlock := slack.NewActionBlock(ConfirmDeploymentAction.Key, confirmButton, denyButton)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
