@@ -35,5 +35,5 @@ func selectVersionActionCallback(routePath string, payload slack.InteractionCall
 		log.Println(err)
 		return errors.New("エラー")
 	}
-	return errors.New("エラー")
+	return nil
 }

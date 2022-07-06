@@ -38,5 +38,5 @@ func eventCallback(routePath string, event *slackevents.AppMentionEvent) error {
 		log.Println(err)
 		return errors.New("エラー")
 	}
-	return errors.New("エラー")
+	return nil
 }

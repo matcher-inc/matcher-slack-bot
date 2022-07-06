@@ -37,7 +37,7 @@ func confirmDeploymentActionCallback(routePath string, payload slack.Interaction
 		log.Println(err)
 		return errors.New("エラー")
 	}
-	return errors.New("エラー")
+	return nil
 }
 
 // 追加
