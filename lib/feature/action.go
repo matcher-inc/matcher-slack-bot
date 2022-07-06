@@ -8,13 +8,13 @@ import (
 
 type Action struct {
 	Key      string
-	CallBack func(slack.InteractionCallback) error
+	Callback func(slack.InteractionCallback) error
 }
 
 func (f Feature) RunAction(payload slack.InteractionCallback) error {
 	for _, action := range f.Actions {
 		if actionIsMatchingToRoute(payload, action) {
-			return action.CallBack(payload)
+			return action.Callback(payload)
 		}
 	}
 	return nil

@@ -4,16 +4,11 @@ import (
 	"errors"
 	"go-bot-test/app/constants"
 	"go-bot-test/lib/api"
-	"go-bot-test/lib/feature"
 	"log"
 
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 )
-
-var Event = feature.MentionEvent{
-	Callback: eventCallback,
-}
 
 func eventCallback(event *slackevents.AppMentionEvent) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
