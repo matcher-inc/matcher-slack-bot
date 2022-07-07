@@ -1,16 +1,21 @@
-package events
+package deploy
 
 import (
-	"go-bot-test/app/constants"
+	"errors"
+	"go-bot-test/features/deploy/actions"
 	"go-bot-test/lib/api"
-	"go-bot-test/lib/listner"
+	"go-bot-test/lib/feature"
 	"log"
 
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 )
 
-func DeployEvent(event slackevents.AppMentionEvent) (error listner.EventError) {
+var event = feature.MentionEvent{
+	Callback: eventCallback,
+}
+
+func eventCallback(routePath string, event *slackevents.AppMentionEvent) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
 	textSection := slack.NewSectionBlock(text, nil, nil)
 
@@ -24,14 +29,14 @@ func DeployEvent(event slackevents.AppMentionEvent) (error listner.EventError) {
 	placeholder := slack.NewTextBlockObject(slack.PlainTextType, "Select version", false, false)
 	selectMenu := slack.NewOptionsSelectBlockElement(slack.OptTypeStatic, placeholder, "", options...)
 
-	actionBlock := slack.NewActionBlock(constants.SelectVersionAction, selectMenu)
+	actionBlock := slack.NewActionBlock(routePath+":"+actions.SelectVersionAction.Key, selectMenu)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
 
 	if _, err := api.Shared.PostEphemeral(event.Channel, event.User, fallbackText, blocks); err != nil {
 		log.Println(err)
-		return listner.EventStandardError
+		return errors.New("エラー")
 	}
-	return
+	return nil
 }
