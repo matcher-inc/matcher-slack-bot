@@ -3,19 +3,19 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"go-bot-test/config/env"
 	"go-bot-test/config/routes"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/slack-go/slack"
 )
 
 func handleAction(w http.ResponseWriter, r *http.Request) {
-	verifier, err := slack.NewSecretsVerifier(r.Header, os.Getenv("SLACK_SIGNING_SECRET"))
+	verifier, err := slack.NewSecretsVerifier(r.Header, env.SLACK_SIGNING_SECRET)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
