@@ -68,6 +68,9 @@ func parseAction(payload slack.InteractionCallback) (*string, error) {
 		action := payload.ActionCallback.BlockActions[0]
 		path := strings.Split(action.BlockID, ":")[0]
 		return &path, nil
+	case slack.InteractionTypeViewSubmission:
+		path := strings.Split(payload.View.CallbackID, ":")[0]
+		return &path, nil
 	}
 	return nil, errors.New("Invalid action")
 }
