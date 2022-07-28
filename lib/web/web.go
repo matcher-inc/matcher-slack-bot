@@ -22,3 +22,8 @@ func serve() {
 		log.Fatal(err)
 	}
 }
+
+func raiseError(w http.ResponseWriter, err error) {
+	log.Println(err)
+	w.WriteHeader(http.StatusInternalServerError)
+}
