@@ -12,6 +12,7 @@ func RunServer() {
 
 func handleRequest() {
 	http.HandleFunc("/slack/events", handleEvent)
+	http.HandleFunc("/slack/slashes", handleSlash)
 	http.HandleFunc("/slack/actions", handleAction)
 }
 
