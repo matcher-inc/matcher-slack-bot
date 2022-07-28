@@ -29,6 +29,9 @@ func actionIsMatchingToRoute(payload slack.InteractionCallback, action Action) b
 		blockAction := payload.ActionCallback.BlockActions[0]
 		path := strings.Split(blockAction.BlockID, ":")[1]
 		return path == action.Key
+	case slack.InteractionTypeViewSubmission:
+		path := strings.Split(payload.View.CallbackID, ":")[1]
+		return path == action.Key
 	}
 	return false
 }
