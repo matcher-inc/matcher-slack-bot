@@ -8,14 +8,14 @@ import (
 	"log"
 
 	"github.com/slack-go/slack"
-	"github.com/slack-go/slack/slackevents"
 )
 
-var event = feature.MentionEvent{
+var event = feature.Event{
+	Type:     feature.SlashEvent,
 	Callback: eventCallback,
 }
 
-func eventCallback(routePath string, event *slackevents.AppMentionEvent) error {
+func eventCallback(params feature.EventParams) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
 	textSection := slack.NewSectionBlock(text, nil, nil)
 
@@ -29,12 +29,12 @@ func eventCallback(routePath string, event *slackevents.AppMentionEvent) error {
 	placeholder := slack.NewTextBlockObject(slack.PlainTextType, "Select version", false, false)
 	selectMenu := slack.NewOptionsSelectBlockElement(slack.OptTypeStatic, placeholder, "", options...)
 
-	actionBlock := slack.NewActionBlock(routePath+":"+actions.SelectVersionAction.Key, selectMenu)
+	actionBlock := slack.NewActionBlock(params.RequestKey+":"+actions.SelectVersionAction.Key, selectMenu)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
 
-	if _, err := api.Shared.PostEphemeral(event.Channel, event.User, fallbackText, blocks); err != nil {
+	if _, err := api.Shared.PostEphemeral(params.ChannelID, params.UserID, fallbackText, blocks); err != nil {
 		log.Println(err)
 		return errors.New("エラー")
 	}
