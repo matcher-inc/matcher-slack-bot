@@ -1,9 +1,9 @@
 package actions
 
 import (
+	"errors"
 	"fmt"
 	"go-bot-test/lib/api"
-	"go-bot-test/lib/listner"
 	"log"
 	"strings"
 	"time"
@@ -11,7 +11,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func ConfirmDeploymentAction(payload slack.InteractionCallback) (error listner.ActionError) {
+func confirmDeploymentActionCallback(routePath string, payload slack.InteractionCallback) error {
 	action := payload.ActionCallback.BlockActions[0]
 	if strings.HasPrefix(action.Value, "v") {
 		version := action.Value
@@ -35,9 +35,9 @@ func ConfirmDeploymentAction(payload slack.InteractionCallback) (error listner.A
 	deleteOriginal := slack.MsgOptionDeleteOriginal(payload.ResponseURL)
 	if _, _, _, err := api.Shared.SendMessage("", deleteOriginal); err != nil {
 		log.Println(err)
-		return listner.ActionStandardError
+		return errors.New("エラー")
 	}
-	return
+	return nil
 }
 
 // 追加

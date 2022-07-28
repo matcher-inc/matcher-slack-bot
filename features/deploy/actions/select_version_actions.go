@@ -1,16 +1,15 @@
 package actions
 
 import (
+	"errors"
 	"fmt"
-	"go-bot-test/app/constants"
 	"go-bot-test/lib/api"
-	"go-bot-test/lib/listner"
 	"log"
 
 	"github.com/slack-go/slack"
 )
 
-func SelectVersionAction(payload slack.InteractionCallback) (error listner.ActionError) {
+func selectVersionActionCallback(routePath string, payload slack.InteractionCallback) error {
 	action := payload.ActionCallback.BlockActions[0]
 	version := action.SelectedOption.Value
 
@@ -26,7 +25,7 @@ func SelectVersionAction(payload slack.InteractionCallback) (error listner.Actio
 	denyButton := slack.NewButtonBlockElement("", "deny", denyButtonText)
 	denyButton.WithStyle(slack.StyleDanger)
 
-	actionBlock := slack.NewActionBlock(constants.ConfirmDeploymentAction, confirmButton, denyButton)
+	actionBlock := slack.NewActionBlock(routePath+":"+ConfirmDeploymentAction.Key, confirmButton, denyButton)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
@@ -34,7 +33,7 @@ func SelectVersionAction(payload slack.InteractionCallback) (error listner.Actio
 	replaceOriginal := slack.MsgOptionReplaceOriginal(payload.ResponseURL)
 	if _, _, _, err := api.Shared.SendMessage("", replaceOriginal, fallbackText, blocks); err != nil {
 		log.Println(err)
-		return listner.ActionStandardError
+		return errors.New("エラー")
 	}
-	return
+	return nil
 }
