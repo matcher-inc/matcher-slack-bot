@@ -5,17 +5,18 @@ import (
 	"go-bot-test/features/deploy/actions"
 	"go-bot-test/lib/api"
 	"go-bot-test/lib/feature"
+	mSlack "go-bot-test/lib/m_slack"
 	"log"
 
 	"github.com/slack-go/slack"
 )
 
 var event = feature.Event{
-	Type:     feature.SlashEvent,
+	Type:     mSlack.SlashEvent,
 	Callback: eventCallback,
 }
 
-func eventCallback(params feature.EventParams) error {
+func eventCallback(params mSlack.EventParams) error {
 	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
 	textSection := slack.NewSectionBlock(text, nil, nil)
 

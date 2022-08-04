@@ -2,31 +2,15 @@ package feature
 
 import (
 	"errors"
+	mSlack "go-bot-test/lib/m_slack"
 )
-
-type EventType string
-
-const (
-	AppMentionEvent EventType = "AppMentionEvent"
-	SlashEvent      EventType = "SlashEvent"
-	URLVerification EventType = "URLVerification"
-)
-
-type EventParams struct {
-	Token       string
-	RequestBody []byte
-	Type        EventType
-	RequestKey  string
-	UserID      string
-	ChannelID   string
-}
 
 type Event struct {
-	Type     EventType
-	Callback func(EventParams) error
+	Type     mSlack.EventType
+	Callback func(mSlack.EventParams) error
 }
 
-func (f Feature) RunEvent(params EventParams) error {
+func (f Feature) RunEvent(params mSlack.EventParams) error {
 	if f.Event.Type == params.Type {
 		return f.Event.Callback(params)
 	}
