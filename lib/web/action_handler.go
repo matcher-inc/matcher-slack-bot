@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"go-bot-test/config/env"
 	"go-bot-test/config/routes"
 	"io"
@@ -44,26 +45,29 @@ func handleAction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	for _, route := range routes.Rounting {
-		if actionIsMatchingToRoute(*payload, route) {
-			error := route.Feature.RunAction(route.Path, *payload)
-			if error != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-		}
+	path, err := parseAction(*payload)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	route, err := routes.GetRoute(*path)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	route.Feature.RunAction(*path, *payload)
 }
 
-func actionIsMatchingToRoute(payload slack.InteractionCallback, route routes.Route) bool {
+func parseAction(payload slack.InteractionCallback) (*string, error) {
 	switch payload.Type {
 	case slack.InteractionTypeBlockActions:
 		if len(payload.ActionCallback.BlockActions) == 0 {
-			return false
+			return nil, errors.New("Invalid action")
 		}
 		action := payload.ActionCallback.BlockActions[0]
 		path := strings.Split(action.BlockID, ":")[0]
-		return path == route.Path
+		return &path, nil
 	}
-	return false
+	return nil, errors.New("Invalid action")
 }

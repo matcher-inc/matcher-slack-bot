@@ -12,6 +12,7 @@ func RunServer() {
 
 func handleRequest() {
 	http.HandleFunc("/slack/events", handleEvent)
+	http.HandleFunc("/slack/slashes", handleSlash)
 	http.HandleFunc("/slack/actions", handleAction)
 }
 
@@ -20,4 +21,9 @@ func serve() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func raiseError(w http.ResponseWriter, err error) {
+	log.Println(err)
+	w.WriteHeader(http.StatusInternalServerError)
 }
