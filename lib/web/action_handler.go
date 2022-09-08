@@ -56,7 +56,7 @@ func handleAction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	route.Feature.RunAction(*path, *payload)
+	route.Feature.RunAction(*path, *payload, w)
 }
 
 func parseAction(payload slack.InteractionCallback) (*string, error) {

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"go-bot-test/lib/api"
 	"log"
+	"net/http"
 
 	"github.com/slack-go/slack"
 )
 
-func selectVersionActionCallback(routePath string, payload slack.InteractionCallback) error {
+func selectVersionActionCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
 	action := payload.ActionCallback.BlockActions[0]
 	version := action.SelectedOption.Value
 
