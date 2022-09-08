@@ -33,7 +33,7 @@ func ParseSlash(r *http.Request) (params *EventParams, err error) {
 }
 
 func ParseEvent(r *http.Request) (params *EventParams, err error) {
-	verifier, err := VerificateSigningSecret(r)
+	verifier, err := verificateSigningSecret(r)
 	if err != nil {
 		return
 	}

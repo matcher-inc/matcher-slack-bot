@@ -10,7 +10,7 @@ import (
 	"github.com/slack-go/slack/slackevents"
 )
 
-func VerificateSigningSecret(r *http.Request) (slack.SecretsVerifier, error) {
+func verificateSigningSecret(r *http.Request) (slack.SecretsVerifier, error) {
 	return slack.NewSecretsVerifier(r.Header, env.SLACK_SIGNING_SECRET)
 }
 
