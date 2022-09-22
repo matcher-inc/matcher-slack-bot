@@ -6,17 +6,18 @@ import (
 	"go-bot-test/features/dialog/actions"
 	"go-bot-test/lib/api"
 	"go-bot-test/lib/feature"
+	mSlack "go-bot-test/lib/m_slack"
 	"log"
 
 	"github.com/slack-go/slack"
 )
 
 var event = feature.Event{
-	Type:     feature.AppMentionEvent,
+	Type:     mSlack.SlashEvent,
 	Callback: eventCallback,
 }
 
-func eventCallback(params feature.EventParams) error {
+func eventCallback(params mSlack.EventParams) error {
 	// log.Printf("[ERROR] Failed to send a message to Slack: %v", err)
 	list := createShopListBySDK(params.RequestKey)
 
