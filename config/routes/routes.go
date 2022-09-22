@@ -3,6 +3,7 @@ package routes
 import (
 	"errors"
 	"go-bot-test/features/deploy"
+	"go-bot-test/features/dialog"
 	"go-bot-test/lib/feature"
 )
 
@@ -13,6 +14,7 @@ type Route struct {
 
 var rounting = []Route{
 	{Path: "deploy", Feature: deploy.Feature},
+	{Path: "dialog", Feature: dialog.Feature},
 }
 
 func GetRoute(path string) (*Route, error) {

@@ -56,7 +56,7 @@ func handleAction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	route.Feature.RunAction(*path, *payload)
+	route.Feature.RunAction(*path, *payload, w)
 }
 
 func parseAction(payload slack.InteractionCallback) (*string, error) {
@@ -67,6 +67,9 @@ func parseAction(payload slack.InteractionCallback) (*string, error) {
 		}
 		action := payload.ActionCallback.BlockActions[0]
 		path := strings.Split(action.BlockID, ":")[0]
+		return &path, nil
+	case slack.InteractionTypeViewSubmission:
+		path := strings.Split(payload.View.CallbackID, ":")[0]
 		return &path, nil
 	}
 	return nil, errors.New("Invalid action")
