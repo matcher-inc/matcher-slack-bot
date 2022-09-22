@@ -1,0 +1,27 @@
+package mSlack
+
+import (
+	"github.com/slack-go/slack"
+)
+
+type buttonType struct {
+	value slack.Style
+}
+
+type Button struct {
+	ActionKey string
+	Text      string
+	Type      buttonType
+}
+
+var (
+	ButtonTypePrimary = buttonType{value: slack.StylePrimary}
+	ButtonTypeDanger  = buttonType{value: slack.StyleDanger}
+)
+
+func (b Button) toOption(params EventParams) slack.Block {
+	confirmButtonText := slack.NewTextBlockObject(slack.PlainTextType, b.Text, false, false)
+	confirmButton := slack.NewButtonBlockElement("", "", confirmButtonText)
+	confirmButton.WithStyle(b.Type.value)
+	return slack.NewActionBlock(params.RequestKey+":"+b.ActionKey, confirmButton)
+}
