@@ -10,6 +10,17 @@ var (
 	client = slack.New(env.SLACK_BOT_TOKEN)
 )
 
+func Post(params EventParams, blocks Blocks) (err error) {
+	blockArr := make([]slack.Block, len(blocks))
+	for i, b := range blocks {
+		blockArr[i] = b.toOption(params)
+	}
+	options := slack.MsgOptionBlocks(blockArr...)
+
+	_, _, err = client.PostMessage(params.ChannelID, options)
+	return
+}
+
 func PostPrivate(params EventParams, blocks Blocks) (err error) {
 	blockArr := make([]slack.Block, len(blocks))
 	for i, b := range blocks {
