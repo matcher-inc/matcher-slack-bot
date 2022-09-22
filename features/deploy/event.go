@@ -3,12 +3,9 @@ package deploy
 import (
 	"errors"
 	"go-bot-test/features/deploy/actions"
-	"go-bot-test/lib/api"
 	"go-bot-test/lib/feature"
 	mSlack "go-bot-test/lib/m_slack"
 	"log"
-
-	"github.com/slack-go/slack"
 )
 
 var event = feature.Event{
@@ -17,25 +14,22 @@ var event = feature.Event{
 }
 
 func eventCallback(params mSlack.EventParams) error {
-	text := slack.NewTextBlockObject(slack.MarkdownType, "Please select *version*.", false, false)
-	textSection := slack.NewSectionBlock(text, nil, nil)
-
-	versions := []string{"v1.0.0", "v1.1.0", "v1.1.1"}
-	options := make([]*slack.OptionBlockObject, 0, len(versions))
-	for _, v := range versions {
-		optionText := slack.NewTextBlockObject(slack.PlainTextType, v, false, false)
-		options = append(options, slack.NewOptionBlockObject(v, optionText, optionText))
+	blocks := []mSlack.Block{
+		mSlack.Text{
+			Body: "Please select *version*.",
+		},
+		mSlack.Select{
+			ActionKey:   actions.SelectVersionAction.Key,
+			Placeholder: "Select version",
+			Options: []mSlack.Option{
+				{Label: "v1.0.0", Value: "v1.0.0", Description: "ドキドキの初バージョン"},
+				{Label: "v1.1.0", Value: "v1.1.0", Description: "ワクワクのアップデート"},
+				{Label: "v1.1.1", Value: "v1.1.1", Description: "気づくかな？マイナーアップデート"},
+			},
+		},
 	}
 
-	placeholder := slack.NewTextBlockObject(slack.PlainTextType, "Select version", false, false)
-	selectMenu := slack.NewOptionsSelectBlockElement(slack.OptTypeStatic, placeholder, "", options...)
-
-	actionBlock := slack.NewActionBlock(params.RequestKey+":"+actions.SelectVersionAction.Key, selectMenu)
-
-	fallbackText := slack.MsgOptionText("This client is not supported.", false)
-	blocks := slack.MsgOptionBlocks(textSection, actionBlock)
-
-	if _, err := api.Shared.PostEphemeral(params.ChannelID, params.UserID, fallbackText, blocks); err != nil {
+	if err := mSlack.PostPrivate(params, blocks); err != nil {
 		log.Println(err)
 		return errors.New("エラー")
 	}
