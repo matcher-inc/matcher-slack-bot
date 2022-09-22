@@ -4,18 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"go-bot-test/config/env"
-	"go-bot-test/lib/feature"
 	"net/http"
 
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
 )
 
-func VerificateSigningSecret(r *http.Request) (slack.SecretsVerifier, error) {
+func verificateSigningSecret(r *http.Request) (slack.SecretsVerifier, error) {
 	return slack.NewSecretsVerifier(r.Header, env.SLACK_SIGNING_SECRET)
 }
 
-func VerificateUrl(w http.ResponseWriter, params feature.EventParams) (err error) {
+func VerificateUrl(w http.ResponseWriter, params EventParams) (err error) {
 	var res *slackevents.ChallengeResponse
 
 	err = json.Unmarshal(params.RequestBody, &res)

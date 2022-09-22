@@ -2,7 +2,6 @@ package web
 
 import (
 	"go-bot-test/config/routes"
-	"go-bot-test/lib/feature"
 	mSlack "go-bot-test/lib/m_slack"
 	"net/http"
 )
@@ -14,7 +13,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if params.Type == feature.URLVerification {
+	if params.Type == mSlack.URLVerification {
 		mSlack.VerificateUrl(w, *params)
 		return
 	}

@@ -3,7 +3,6 @@ package mSlack
 import (
 	"encoding/json"
 	"errors"
-	"go-bot-test/lib/feature"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 	"github.com/slack-go/slack/slackevents"
 )
 
-func ParseSlash(r *http.Request) (params *feature.EventParams, err error) {
+func ParseSlash(r *http.Request) (params *EventParams, err error) {
 	slash, err := slack.SlashCommandParse(r)
 	if err != nil {
 		return
@@ -24,8 +23,8 @@ func ParseSlash(r *http.Request) (params *feature.EventParams, err error) {
 		return
 	}
 
-	params = &feature.EventParams{
-		Type:       feature.SlashEvent,
+	params = &EventParams{
+		Type:       SlashEvent,
 		RequestKey: slash.Command[1:],
 		ChannelID:  slash.ChannelID,
 		UserID:     slash.UserID,
@@ -33,8 +32,8 @@ func ParseSlash(r *http.Request) (params *feature.EventParams, err error) {
 	return
 }
 
-func ParseEvent(r *http.Request) (params *feature.EventParams, err error) {
-	verifier, err := VerificateSigningSecret(r)
+func ParseEvent(r *http.Request) (params *EventParams, err error) {
+	verifier, err := verificateSigningSecret(r)
 	if err != nil {
 		return
 	}
@@ -57,16 +56,16 @@ func ParseEvent(r *http.Request) (params *feature.EventParams, err error) {
 
 	switch eventsAPIEvent.Type {
 	case slackevents.URLVerification:
-		params = &feature.EventParams{
-			Type:        feature.URLVerification,
+		params = &EventParams{
+			Type:        URLVerification,
 			RequestBody: body,
 		}
 		return
 	case slackevents.CallbackEvent:
 		switch data := eventsAPIEvent.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
-			params = &feature.EventParams{
-				Type:       feature.AppMentionEvent,
+			params = &EventParams{
+				Type:       AppMentionEvent,
 				RequestKey: strings.Split(data.Text, " ")[1],
 				UserID:     data.User,
 				ChannelID:  data.Channel,
