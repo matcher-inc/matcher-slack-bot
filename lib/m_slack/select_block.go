@@ -18,7 +18,7 @@ func (s Select) optionObjects(params EventParams) []*slack.OptionBlockObject {
 	return options
 }
 
-func (s Select) toOption(params EventParams) slack.Block {
+func (s Select) toBlock(params EventParams) slack.Block {
 	selectMenu := s.toBlockElement(params)
 	return slack.NewActionBlock(params.RequestKey+":"+s.ActionKey, selectMenu)
 }

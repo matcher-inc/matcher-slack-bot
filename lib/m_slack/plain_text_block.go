@@ -9,13 +9,13 @@ type PlainText struct {
 	ActionKey string
 }
 
-func (p PlainText) toOption(params EventParams) slack.Block {
+func (p PlainText) toBlock(params EventParams) slack.Block {
 	element := p.toBlockElement(params)
 	return slack.NewActionBlock(params.RequestKey+":"+p.ActionKey, element)
 }
 
 func (p PlainText) toBlockElement(params EventParams) slack.BlockElement {
-	el := slack.NewPlainTextInputBlockElement(nil, "action_id_note")
+	el := slack.NewPlainTextInputBlockElement(nil, params.RequestKey+":"+p.ActionKey)
 	el.Multiline = p.Multiline
 	return el
 }
