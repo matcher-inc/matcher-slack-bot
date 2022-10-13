@@ -1,7 +1,8 @@
 package mSlack
 
-type EventParams struct {
-	Token       string
+type RequestParams struct {
+	Token string
+	// RequestBodyを使うのは、eventのparseで取得して、verificationURLでチェックするときだけ
 	RequestBody []byte
 	Type        EventType
 	RequestKey  string

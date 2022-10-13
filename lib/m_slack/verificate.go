@@ -14,7 +14,7 @@ func verificateSigningSecret(r *http.Request) (slack.SecretsVerifier, error) {
 	return slack.NewSecretsVerifier(r.Header, env.SLACK_SIGNING_SECRET)
 }
 
-func VerificateUrl(w http.ResponseWriter, params EventParams) (err error) {
+func VerificateUrl(w http.ResponseWriter, params RequestParams) (err error) {
 	var res *slackevents.ChallengeResponse
 
 	err = json.Unmarshal(params.RequestBody, &res)

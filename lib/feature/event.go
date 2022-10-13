@@ -7,10 +7,10 @@ import (
 
 type Event struct {
 	Type     mSlack.EventType
-	Callback func(mSlack.EventParams) error
+	Callback func(mSlack.RequestParams) error
 }
 
-func (f Feature) RunEvent(params mSlack.EventParams) error {
+func (f Feature) RunEvent(params mSlack.RequestParams) error {
 	if f.Event.Type == params.Type {
 		return f.Event.Callback(params)
 	}

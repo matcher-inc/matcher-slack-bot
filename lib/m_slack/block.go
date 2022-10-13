@@ -5,7 +5,7 @@ import (
 )
 
 type Block interface {
-	toBlock(EventParams) slack.Block
+	toBlock(RequestParams) slack.Block
 }
 
 type Blocks []Block

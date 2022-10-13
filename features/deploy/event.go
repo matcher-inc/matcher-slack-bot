@@ -13,7 +13,7 @@ var event = feature.Event{
 	Callback: eventCallback,
 }
 
-func eventCallback(params mSlack.EventParams) error {
+func eventCallback(params mSlack.RequestParams) error {
 	blocks := []mSlack.Block{
 		mSlack.Text{
 			Body: "Please select *version*.",

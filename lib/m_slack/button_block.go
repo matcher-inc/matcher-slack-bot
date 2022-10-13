@@ -19,7 +19,7 @@ var (
 	ButtonTypeDanger  = buttonType{value: slack.StyleDanger}
 )
 
-func (b Button) toBlock(params EventParams) slack.Block {
+func (b Button) toBlock(params RequestParams) slack.Block {
 	confirmButtonText := slack.NewTextBlockObject(slack.PlainTextType, b.Text, false, false)
 	confirmButton := slack.NewButtonBlockElement("", "", confirmButtonText)
 	confirmButton.WithStyle(b.Type.value)

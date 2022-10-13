@@ -10,7 +10,7 @@ type Select struct {
 	Options     []Option
 }
 
-func (s Select) optionObjects(params EventParams) []*slack.OptionBlockObject {
+func (s Select) optionObjects(params RequestParams) []*slack.OptionBlockObject {
 	options := make([]*slack.OptionBlockObject, len(s.Options))
 	for i, option := range s.Options {
 		options[i] = option.toBlockObject(params)
@@ -18,12 +18,12 @@ func (s Select) optionObjects(params EventParams) []*slack.OptionBlockObject {
 	return options
 }
 
-func (s Select) toBlock(params EventParams) slack.Block {
+func (s Select) toBlock(params RequestParams) slack.Block {
 	selectMenu := s.toBlockElement(params)
 	return slack.NewActionBlock(params.RequestKey+":"+s.ActionKey, selectMenu)
 }
 
-func (s Select) toBlockElement(params EventParams) slack.BlockElement {
+func (s Select) toBlockElement(params RequestParams) slack.BlockElement {
 	placeholder := slack.NewTextBlockObject(slack.PlainTextType, s.Placeholder, false, false)
 	return slack.NewOptionsSelectBlockElement(
 		slack.OptTypeStatic,

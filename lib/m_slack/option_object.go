@@ -10,7 +10,7 @@ type Option struct {
 	Description string
 }
 
-func (o Option) toBlockObject(params EventParams) *slack.OptionBlockObject {
+func (o Option) toBlockObject(params RequestParams) *slack.OptionBlockObject {
 	label := slack.NewTextBlockObject(slack.PlainTextType, o.Label, false, false)
 	descriptionText := o.Description
 	if descriptionText == "" {

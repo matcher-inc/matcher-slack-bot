@@ -12,7 +12,7 @@ import (
 	"github.com/slack-go/slack/slackevents"
 )
 
-func ParseSlash(r *http.Request) (params *EventParams, err error) {
+func ParseSlash(r *http.Request) (params *RequestParams, err error) {
 	slash, err := slack.SlashCommandParse(r)
 	if err != nil {
 		return
@@ -23,7 +23,7 @@ func ParseSlash(r *http.Request) (params *EventParams, err error) {
 		return
 	}
 
-	params = &EventParams{
+	params = &RequestParams{
 		Type:       SlashEvent,
 		RequestKey: slash.Command[1:],
 		ChannelID:  slash.ChannelID,
@@ -32,7 +32,7 @@ func ParseSlash(r *http.Request) (params *EventParams, err error) {
 	return
 }
 
-func ParseEvent(r *http.Request) (params *EventParams, err error) {
+func ParseEvent(r *http.Request) (params *RequestParams, err error) {
 	verifier, err := verificateSigningSecret(r)
 	if err != nil {
 		return
@@ -56,7 +56,7 @@ func ParseEvent(r *http.Request) (params *EventParams, err error) {
 
 	switch eventsAPIEvent.Type {
 	case slackevents.URLVerification:
-		params = &EventParams{
+		params = &RequestParams{
 			Type:        URLVerification,
 			RequestBody: body,
 		}
@@ -64,7 +64,7 @@ func ParseEvent(r *http.Request) (params *EventParams, err error) {
 	case slackevents.CallbackEvent:
 		switch data := eventsAPIEvent.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
-			params = &EventParams{
+			params = &RequestParams{
 				Type:       AppMentionEvent,
 				RequestKey: strings.Split(data.Text, " ")[1],
 				UserID:     data.User,

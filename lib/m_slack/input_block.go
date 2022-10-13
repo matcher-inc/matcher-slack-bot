@@ -5,7 +5,7 @@ import (
 )
 
 type InputElement interface {
-	toBlockElement(EventParams) slack.BlockElement
+	toBlockElement(RequestParams) slack.BlockElement
 }
 
 type Input struct {
@@ -14,7 +14,7 @@ type Input struct {
 	Element InputElement
 }
 
-func (i Input) toBlock(params EventParams) slack.Block {
+func (i Input) toBlock(params RequestParams) slack.Block {
 	label := slack.NewTextBlockObject(slack.MarkdownType, i.Label, false, false)
 	return slack.NewInputBlock(i.BlockID, label, i.Element.toBlockElement(params))
 }
