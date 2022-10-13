@@ -19,5 +19,5 @@ func handleSlash(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route.Feature.RunEvent(*params)
+	route.Feature.RunEvent(*params, mSlack.SlashEvent)
 }

@@ -10,8 +10,8 @@ type Event struct {
 	Callback func(mSlack.RequestParams) error
 }
 
-func (f Feature) RunEvent(params mSlack.RequestParams) error {
-	if f.Event.Type == params.Type {
+func (f Feature) RunEvent(params mSlack.RequestParams, eventType mSlack.EventType) error {
+	if f.Event.Type == eventType {
 		return f.Event.Callback(params)
 	}
 	return errors.New("タイプが一致しません。")

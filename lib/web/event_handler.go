@@ -7,14 +7,14 @@ import (
 )
 
 func handleEvent(w http.ResponseWriter, r *http.Request) {
-	params, err := mSlack.ParseEvent(r)
+	params, requestBody, eventType, err := mSlack.ParseEvent(r)
 	if err != nil {
 		raiseError(w, err)
 		return
 	}
 
-	if params.Type == mSlack.URLVerification {
-		mSlack.VerificateUrl(w, *params)
+	if eventType == mSlack.URLVerification {
+		mSlack.VerificateUrl(w, requestBody)
 		return
 	}
 
@@ -24,5 +24,5 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route.Feature.RunEvent(*params)
+	route.Feature.RunEvent(*params, eventType)
 }

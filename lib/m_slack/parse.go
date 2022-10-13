@@ -24,7 +24,6 @@ func ParseSlash(r *http.Request) (params *RequestParams, err error) {
 	}
 
 	params = &RequestParams{
-		Type:       SlashEvent,
 		RequestKey: slash.Command[1:],
 		ChannelID:  slash.ChannelID,
 		UserID:     slash.UserID,
@@ -32,7 +31,7 @@ func ParseSlash(r *http.Request) (params *RequestParams, err error) {
 	return
 }
 
-func ParseEvent(r *http.Request) (params *RequestParams, err error) {
+func ParseEvent(r *http.Request) (params *RequestParams, requestBody []byte, eventType EventType, err error) {
 	verifier, err := verificateSigningSecret(r)
 	if err != nil {
 		return
@@ -56,20 +55,19 @@ func ParseEvent(r *http.Request) (params *RequestParams, err error) {
 
 	switch eventsAPIEvent.Type {
 	case slackevents.URLVerification:
-		params = &RequestParams{
-			Type:        URLVerification,
-			RequestBody: body,
-		}
+		params = &RequestParams{}
+		requestBody = body
+		eventType = URLVerification
 		return
 	case slackevents.CallbackEvent:
 		switch data := eventsAPIEvent.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			params = &RequestParams{
-				Type:       AppMentionEvent,
 				RequestKey: strings.Split(data.Text, " ")[1],
 				UserID:     data.User,
 				ChannelID:  data.Channel,
 			}
+			eventType = AppMentionEvent
 			return
 		}
 	}
