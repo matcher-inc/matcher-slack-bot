@@ -6,6 +6,7 @@ type RequestParams struct {
 	// RequestBody []byte
 	// Type        EventType
 	FeaturePath string
+	ActionPath  string
 	UserID      string
 	ChannelID   string
 }
