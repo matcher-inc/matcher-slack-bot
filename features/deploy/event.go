@@ -19,7 +19,7 @@ func eventCallback(params mSlack.RequestParams) error {
 			Body: "Please select *version*.",
 		},
 		mSlack.Select{
-			ActionKey:   actions.SelectVersionAction.Key,
+			ActionKey:   actions.SelectVersionAction.ActionPath,
 			Placeholder: "Select version",
 			Options: []mSlack.Option{
 				{Label: "v1.0.0", Value: "v1.0.0", Description: "ドキドキの初バージョン"},

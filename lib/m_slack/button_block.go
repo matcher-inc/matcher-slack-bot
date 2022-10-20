@@ -23,5 +23,5 @@ func (b Button) toBlock(params RequestParams) slack.Block {
 	confirmButtonText := slack.NewTextBlockObject(slack.PlainTextType, b.Text, false, false)
 	confirmButton := slack.NewButtonBlockElement("", "", confirmButtonText)
 	confirmButton.WithStyle(b.Type.value)
-	return slack.NewActionBlock(params.RequestKey+":"+b.ActionKey, confirmButton)
+	return slack.NewActionBlock(params.FeaturePath+":"+b.ActionKey, confirmButton)
 }

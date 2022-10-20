@@ -23,7 +23,7 @@ func showDialogCallback(routePath string, payload slack.InteractionCallback, w h
 	modal := createOrderModalBySDK()
 
 	// - metadata : CallbackID
-	modal.CallbackID = routePath + ":" + ReceiveFormAction.Key
+	modal.CallbackID = routePath + ":" + ReceiveFormAction.ActionPath
 
 	// - metadata : ExternalID
 	modal.ExternalID = payload.User.ID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)

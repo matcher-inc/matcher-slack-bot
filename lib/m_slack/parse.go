@@ -24,9 +24,9 @@ func ParseSlash(r *http.Request) (params *RequestParams, err error) {
 	}
 
 	params = &RequestParams{
-		RequestKey: slash.Command[1:],
-		ChannelID:  slash.ChannelID,
-		UserID:     slash.UserID,
+		FeaturePath: slash.Command[1:],
+		ChannelID:   slash.ChannelID,
+		UserID:      slash.UserID,
 	}
 	return
 }
@@ -63,9 +63,9 @@ func ParseEvent(r *http.Request) (params *RequestParams, requestBody []byte, eve
 		switch data := eventsAPIEvent.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			params = &RequestParams{
-				RequestKey: strings.Split(data.Text, " ")[1],
-				UserID:     data.User,
-				ChannelID:  data.Channel,
+				FeaturePath: strings.Split(data.Text, " ")[1],
+				UserID:      data.User,
+				ChannelID:   data.Channel,
 			}
 			eventType = AppMentionEvent
 			return

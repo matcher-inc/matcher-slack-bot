@@ -18,7 +18,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	route, err := routes.GetRoute(params.RequestKey)
+	route, err := routes.GetRoute(params.FeaturePath)
 	if err != nil {
 		raiseError(w, err)
 		return

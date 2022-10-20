@@ -8,8 +8,8 @@ import (
 )
 
 type Action struct {
-	Key      string
-	Callback func(string, slack.InteractionCallback, http.ResponseWriter) error
+	ActionPath string
+	Callback   func(string, slack.InteractionCallback, http.ResponseWriter) error
 }
 
 func (f Feature) RunAction(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
@@ -29,10 +29,10 @@ func actionIsMatchingToRoute(payload slack.InteractionCallback, action Action) b
 		}
 		blockAction := payload.ActionCallback.BlockActions[0]
 		path := strings.Split(blockAction.BlockID, ":")[1]
-		return path == action.Key
+		return path == action.ActionPath
 	case slack.InteractionTypeViewSubmission:
 		path := strings.Split(payload.View.CallbackID, ":")[1]
-		return path == action.Key
+		return path == action.ActionPath
 	}
 	return false
 }

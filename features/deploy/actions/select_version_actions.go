@@ -26,7 +26,7 @@ func selectVersionActionCallback(routePath string, payload slack.InteractionCall
 	denyButton := slack.NewButtonBlockElement("", "deny", denyButtonText)
 	denyButton.WithStyle(slack.StyleDanger)
 
-	actionBlock := slack.NewActionBlock(routePath+":"+ConfirmDeploymentAction.Key, confirmButton, denyButton)
+	actionBlock := slack.NewActionBlock(routePath+":"+ConfirmDeploymentAction.ActionPath, confirmButton, denyButton)
 
 	fallbackText := slack.MsgOptionText("This client is not supported.", false)
 	blocks := slack.MsgOptionBlocks(textSection, actionBlock)

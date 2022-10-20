@@ -20,12 +20,12 @@ func (r RadioButtons) optionObjects(params RequestParams) []*slack.OptionBlockOb
 func (r RadioButtons) toBlock(params RequestParams) slack.Block {
 	element := r.toBlockElement(params)
 	// BlockIDを渡すから
-	return slack.NewActionBlock(params.RequestKey+":"+r.ActionKey, element)
+	return slack.NewActionBlock(params.FeaturePath+":"+r.ActionKey, element)
 }
 
 func (r RadioButtons) toBlockElement(params RequestParams) slack.BlockElement {
 	return slack.NewRadioButtonsBlockElement(
-		params.RequestKey+":"+r.ActionKey,
+		params.FeaturePath+":"+r.ActionKey,
 		r.optionObjects(params)...,
 	)
 }

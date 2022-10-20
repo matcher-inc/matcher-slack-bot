@@ -19,7 +19,7 @@ func eventCallback(params mSlack.RequestParams) error {
 			Body: "Dialog Event Text Body",
 		},
 		mSlack.Button{
-			ActionKey: actions.ShowDialogAction.Key,
+			ActionKey: actions.ShowDialogAction.ActionPath,
 			Text:      "Dialog Event Button Text",
 			Type:      mSlack.ButtonTypePrimary,
 		},
