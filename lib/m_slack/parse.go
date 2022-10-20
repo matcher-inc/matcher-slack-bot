@@ -108,21 +108,30 @@ func ParseAction(r *http.Request) (params *RequestParams, err error) {
 			return
 		}
 		action := payload.ActionCallback.BlockActions[0]
+		value := action.Value
+		if value == "" {
+			value = action.SelectedOption.Value
+		}
 		path := strings.Split(action.BlockID, ":")
 		params = &RequestParams{
 			FeaturePath: path[0],
 			ActionPath:  path[1],
 			UserID:      payload.User.ID,
 			ChannelID:   payload.Channel.ID,
+			ActionParams: ActionParams{
+				Value: value,
+			},
 		}
 		return
 	case slack.InteractionTypeViewSubmission:
 		path := strings.Split(payload.View.CallbackID, ":")
 		params = &RequestParams{
-			FeaturePath: path[0],
-			ActionPath:  path[1],
-			UserID:      payload.User.ID,
-			ChannelID:   payload.Channel.ID,
+			FeaturePath:  path[0],
+			ActionPath:   path[1],
+			UserID:       payload.User.ID,
+			ChannelID:    payload.Channel.ID,
+			TriggerID:    payload.TriggerID,
+			ActionParams: ActionParams{},
 		}
 		return
 	}
