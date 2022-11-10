@@ -5,40 +5,37 @@ import (
 	"errors"
 	"fmt"
 	"go-bot-test/lib/api"
-	"net/http"
+	mSlack "go-bot-test/lib/m_slack"
 	"strconv"
 
 	"github.com/slack-go/slack"
 )
 
-func ConfirmCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
+func ConfirmCallback(params mSlack.RequestParams) error {
 	// Validate a message.
-	if err := validateChip(payload); err != nil {
+	if err := validateChip(params); err != nil {
 		// Create validation failed response.
-		errorsMap := map[string]string{
-			"block_id_chip": "[ERROR] Please enter a number.",
-		}
+		// errorsMap := map[string]string{
+		// 	"block_id_chip": "[ERROR] Please enter a number.",
+		// }
 
-		resAction := slack.NewErrorsViewSubmissionResponse(errorsMap)
-		rBytes, err := json.Marshal(resAction)
-		if err != nil {
-			return errors.New("エラー")
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(rBytes)
+		// resAction := slack.NewErrorsViewSubmissionResponse(errorsMap)
+		// rBytes, err := json.Marshal(resAction)
+		// if err != nil {
+		// 	return errors.New("エラー")
+		// }
 		return nil
 	}
 
 	// Get private metadata
 	var privateMeta privateMeta
-	if err := json.Unmarshal([]byte(payload.View.PrivateMetadata), &privateMeta); err != nil {
+	if err := json.Unmarshal([]byte(params.PrivateMetadata), &privateMeta); err != nil {
 		return errors.New("エラー")
 	}
 
 	// Send a complession message.
 	// - Create message options
-	option, err := createOption(payload, privateMeta)
+	option, err := createOption(params)
 	if err != nil {
 		return errors.New("エラー")
 	}
@@ -48,21 +45,21 @@ func ConfirmCallback(routePath string, payload slack.InteractionCallback, w http
 		return errors.New("エラー")
 	}
 
-	resAction := slack.NewClearViewSubmissionResponse()
-	rBytes, err := json.Marshal(resAction)
-	if err != nil {
-		return errors.New("エラー")
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(rBytes)
+	// resAction := slack.NewClearViewSubmissionResponse()
+	// rBytes, err := json.Marshal(resAction)
+	// if err != nil {
+	// 	return errors.New("エラー")
+	// }
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(rBytes)
 	return nil
 
 }
 
-func validateChip(message slack.InteractionCallback) error {
+func validateChip(params mSlack.RequestParams) error {
 	// Get an input value.
-	chip := message.View.State.Values["block_id_chip"]["action_id_chip"].Value
+	chip := params.ActionParams.Values["block_id_chip"]["action_id_chip"].Value
 
 	// Chech if the value is number or not.
 	if _, err := strconv.ParseFloat(chip, 64); err != nil {
@@ -71,7 +68,11 @@ func validateChip(message slack.InteractionCallback) error {
 	return nil
 }
 
-func createOption(message slack.InteractionCallback, privateMeta privateMeta) (slack.MsgOption, error) {
+func createOption(params mSlack.RequestParams) (slack.MsgOption, error) {
+	var privateMeta privateMeta
+	if err := json.Unmarshal([]byte(params.PrivateMetadata), &privateMeta); err != nil {
+		return nil, fmt.Errorf("failed to parse PrivateMetadata")
+	}
 
 	// Text section
 	titleText := slack.NewTextBlockObject("mrkdwn", ":hamburger: *Thank you for your order !!*", false, false)
@@ -98,7 +99,7 @@ func createOption(message slack.InteractionCallback, privateMeta privateMeta) (s
 		return nil, fmt.Errorf("failed to convert amount to float64: %w", err)
 	}
 
-	chip, err := strconv.ParseFloat(message.View.State.Values["block_id_chip"]["action_id_chip"].Value, 64)
+	chip, err := strconv.ParseFloat(params.ActionParams.Values["block_id_chip"]["action_id_chip"].Value, 64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert amount to float64: %w", err)
 	}

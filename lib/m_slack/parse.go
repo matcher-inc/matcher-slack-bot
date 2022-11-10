@@ -121,7 +121,11 @@ func ParseAction(r *http.Request) (params *RequestParams, err error) {
 			ActionParams: ActionParams{
 				Value: value,
 			},
-			responseURL: payload.ResponseURL,
+			TriggerID:       payload.TriggerID,
+			responseURL:     payload.ResponseURL,
+			PrivateMetadata: payload.View.PrivateMetadata,
+			ViewID:          payload.View.ID,
+			ExternalID:      payload.View.ExternalID,
 		}
 		return
 	case slack.InteractionTypeViewSubmission:
@@ -135,6 +139,9 @@ func ParseAction(r *http.Request) (params *RequestParams, err error) {
 			ActionParams: ActionParams{
 				Values: payload.View.State.Values,
 			},
+			PrivateMetadata: payload.View.PrivateMetadata,
+			ViewID:          payload.View.ID,
+			ExternalID:      payload.View.ExternalID,
 		}
 		return
 	}

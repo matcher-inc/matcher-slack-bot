@@ -5,11 +5,8 @@ import (
 	"errors"
 	mSlack "go-bot-test/lib/m_slack"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/slack-go/slack"
 )
 
 var (
@@ -19,21 +16,21 @@ var (
 	reqUnknown                     = "unknown"
 )
 
-func showDialogCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
+func showDialogCallback(params mSlack.RequestParams) error {
 	modal := createOrderModalBySDK()
 
-	modal.CallbackID = routePath + ":" + ReceiveFormAction.ActionPath
-	modal.ExternalID = payload.User.ID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
-	params := privateMeta{
-		ChannelID: payload.Channel.ID,
+	modal.CallbackID = params.FeaturePath + ":" + ReceiveFormAction.ActionPath
+	modal.ExternalID = params.UserID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	privateParams := privateMeta{
+		ChannelID: params.ChannelID,
 	}
-	bytes, err := json.Marshal(params)
+	bytes, err := json.Marshal(privateParams)
 	if err != nil {
 		return errors.New("エラー")
 	}
 	modal.PrivateMetadata = string(bytes)
 
-	if err := mSlack.OpenView(mSlack.RequestParams{}, *modal, payload.TriggerID); err != nil {
+	if err := mSlack.OpenView(params, *modal, params.TriggerID); err != nil {
 		log.Println(err)
 		return errors.New("エラー")
 	}
@@ -66,7 +63,7 @@ func createOrderModalBySDK() *mSlack.Modal {
 		BlockID: "action_id_steak",
 		Label:   "How do you like your steak?",
 		Element: mSlack.Select{
-			ActionKey: "action_id_steak", // 不要？,
+			ActionPath: "action_id_steak", // 不要？,
 			Options: []mSlack.Option{
 				{Label: "well done", Value: "well done"},
 				{Label: "medium", Value: "medium"},

@@ -4,44 +4,44 @@ import (
 	"encoding/json"
 	"errors"
 	"go-bot-test/lib/api"
-	"net/http"
+	mSlack "go-bot-test/lib/m_slack"
 	"strconv"
 	"time"
 
 	"github.com/slack-go/slack"
 )
 
-func receiveFormCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
+func receiveFormCallback(params mSlack.RequestParams) error {
 	// Get the selected information.
 	// - radio button
-	menu := payload.View.State.Values["block_id_menu"]["action_id_menu"].SelectedOption.Value
+	menu := params.ActionParams.Values["block_id_menu"]["action_id_menu"].SelectedOption.Value
 
 	// - static_select
-	steak := payload.View.State.Values["block_id_steak"]["action_id_steak"].SelectedOption.Value
+	steak := params.ActionParams.Values["block_id_steak"]["action_id_steak"].SelectedOption.Value
 
 	// - text
-	note := payload.View.State.Values["block_id_note"]["action_id_note"].Value
+	note := params.ActionParams.Values["block_id_note"]["action_id_note"].Value
 
 	// Create a confirmation modal.
 	// - apperance
 	modal := createConfirmationModalBySDK(menu, steak, note)
 
 	// - metadata : CallbackID
-	modal.CallbackID = routePath + ":" + ConfirmAction.ActionPath
+	modal.CallbackID = params.FeaturePath + ":" + ConfirmAction.ActionPath
 
 	// - metadata : ExternalID
-	modal.ExternalID = payload.User.ID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	modal.ExternalID = params.UserID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 
 	// - metadata : PrivateMeta
 	//   - Get private metadata of a message
 	var pMeta privateMeta
-	if err := json.Unmarshal([]byte(payload.View.PrivateMetadata), &pMeta); err != nil {
+	if err := json.Unmarshal([]byte(params.PrivateMetadata), &pMeta); err != nil {
 		// return events.APIGatewayProxyResponse{StatusCode: 200}, fmt.Errorf("failed to unmarshal private metadata: %w", err)
 		return errors.New("エラー")
 	}
 
 	//   - Create new private metadata
-	params := privateMeta{
+	privateParams := privateMeta{
 		ChannelID: pMeta.ChannelID,
 		order: order{
 			Menu:   menu,
@@ -51,23 +51,23 @@ func receiveFormCallback(routePath string, payload slack.InteractionCallback, w 
 		},
 	}
 
-	pBytes, err := json.Marshal(params)
+	pBytes, err := json.Marshal(privateParams)
 	if err != nil {
 		return errors.New("エラー")
 	}
 
 	modal.PrivateMetadata = string(pBytes)
 
-	api.PushModalView(modal, w)
-	return nil
-
+	// api.PushModalView(modal, w)
+	// return nil
 	// 上記もしくは下記
+
 	// payload.View.ExternalID, payload.View.ID のどちらかだけを渡す
 	// 両方渡すとargumentserror
-	// if _, err := api.Shared.UpdateView(*modal, payload.View.ExternalID, "", ""); err != nil {
-	// 	return errors.New("エラー")
-	// }
-	// return nil
+	if _, err := api.Shared.UpdateView(*modal, params.ExternalID, "", ""); err != nil {
+		return errors.New("エラー")
+	}
+	return nil
 }
 
 func createConfirmationModalBySDK(menu, steak, note string) *slack.ModalViewRequest {
