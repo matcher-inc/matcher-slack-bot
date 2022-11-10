@@ -1,11 +1,9 @@
 package deploy
 
 import (
-	"errors"
 	"go-bot-test/features/deploy/actions"
 	"go-bot-test/lib/feature"
 	mSlack "go-bot-test/lib/m_slack"
-	"log"
 )
 
 var event = feature.Event{
@@ -30,8 +28,7 @@ func eventCallback(params mSlack.RequestParams) error {
 	}
 
 	if err := mSlack.PostPrivate(params, blocks); err != nil {
-		log.Println(err)
-		return errors.New("エラー")
+		return err
 	}
 	return nil
 }
