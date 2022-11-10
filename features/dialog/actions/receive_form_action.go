@@ -27,7 +27,7 @@ func receiveFormCallback(routePath string, payload slack.InteractionCallback, w 
 	modal := createConfirmationModalBySDK(menu, steak, note)
 
 	// - metadata : CallbackID
-	modal.CallbackID = routePath + ":" + ConfirmAction.Key
+	modal.CallbackID = routePath + ":" + ConfirmAction.ActionPath
 
 	// - metadata : ExternalID
 	modal.ExternalID = payload.User.ID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)

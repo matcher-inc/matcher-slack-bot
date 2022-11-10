@@ -22,7 +22,7 @@ var (
 func showDialogCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
 	modal := createOrderModalBySDK()
 
-	modal.CallbackID = routePath + ":" + ReceiveFormAction.Key
+	modal.CallbackID = routePath + ":" + ReceiveFormAction.ActionPath
 	modal.ExternalID = payload.User.ID + strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	params := privateMeta{
 		ChannelID: payload.Channel.ID,

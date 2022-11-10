@@ -1,11 +1,9 @@
 package deploy
 
 import (
-	"errors"
 	"go-bot-test/features/deploy/actions"
 	"go-bot-test/lib/feature"
 	mSlack "go-bot-test/lib/m_slack"
-	"log"
 )
 
 var event = feature.Event{
@@ -19,7 +17,7 @@ func eventCallback(params mSlack.RequestParams) error {
 			Body: "Please select *version*.",
 		},
 		mSlack.Select{
-			ActionKey:   actions.SelectVersionAction.Key,
+			ActionPath:  actions.SelectVersionAction.ActionPath,
 			Placeholder: "Select version",
 			Options: []mSlack.Option{
 				{Label: "v1.0.0", Value: "v1.0.0", Description: "ドキドキの初バージョン"},
@@ -30,8 +28,7 @@ func eventCallback(params mSlack.RequestParams) error {
 	}
 
 	if err := mSlack.PostPrivate(params, blocks); err != nil {
-		log.Println(err)
-		return errors.New("エラー")
+		return err
 	}
 	return nil
 }

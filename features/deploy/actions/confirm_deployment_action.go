@@ -1,48 +1,22 @@
 package actions
 
 import (
-	"errors"
 	"fmt"
-	"go-bot-test/lib/api"
-	"log"
-	"net/http"
+	mSlack "go-bot-test/lib/m_slack"
 	"strings"
-	"time"
-
-	"github.com/slack-go/slack"
 )
 
-func confirmDeploymentActionCallback(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
-	action := payload.ActionCallback.BlockActions[0]
-	if strings.HasPrefix(action.Value, "v") {
-		version := action.Value
-		go func() {
-			startMsg := slack.MsgOptionText(
-				fmt.Sprintf("<@%s> OK, I will deploy `%s`.", payload.User.ID, version), false)
-			if _, _, err := api.Shared.PostMessage(payload.Channel.ID, startMsg); err != nil {
-				log.Println(err)
-			}
-
-			deploy(version)
-
-			endMsg := slack.MsgOptionText(
-				fmt.Sprintf("`%s` deployment completed!", version), false)
-			if _, _, err := api.Shared.PostMessage(payload.Channel.ID, endMsg); err != nil {
-				log.Println(err)
-			}
-		}()
+func confirmDeploymentActionCallback(params mSlack.RequestParams) error {
+	if err := mSlack.DeleteOriginal(params); err != nil {
+		return err
 	}
-
-	deleteOriginal := slack.MsgOptionDeleteOriginal(payload.ResponseURL)
-	if _, _, _, err := api.Shared.SendMessage("", deleteOriginal); err != nil {
-		log.Println(err)
-		return errors.New("エラー")
+	if strings.HasPrefix(params.ActionParams.Value, "v") {
+		endMsgBlocks := []mSlack.Block{
+			mSlack.Text{Body: fmt.Sprintf("`%s` deployment completed!", params.ActionParams.Value)},
+		}
+		if err := mSlack.PostPrivate(params, endMsgBlocks); err != nil {
+			return err
+		}
 	}
 	return nil
-}
-
-// 追加
-func deploy(version string) {
-	log.Printf("deploy %s", version)
-	time.Sleep(10 * time.Second)
 }

@@ -31,6 +31,17 @@ func PostDirect(params RequestParams, blocks Blocks) (err error) {
 	return
 }
 
+func PostResponse(params RequestParams, blocks Blocks) (err error) {
+	options := blocks.toMsgOption(params)
+	_, _, _, err = client.SendMessage("", slack.MsgOptionReplaceOriginal(params.responseURL), options)
+	return
+}
+
+func DeleteOriginal(params RequestParams) (err error) {
+	_, _, _, err = client.SendMessage("", slack.MsgOptionDeleteOriginal(params.responseURL))
+	return
+}
+
 // モーダルなどを開く
 // TriggerIDはとりあえず、後でparamsに含める
 func OpenView(params RequestParams, modal Modal, TriggerID string) (err error) {

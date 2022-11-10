@@ -1,38 +1,20 @@
 package feature
 
 import (
-	"net/http"
-	"strings"
-
-	"github.com/slack-go/slack"
+	"errors"
+	mSlack "go-bot-test/lib/m_slack"
 )
 
 type Action struct {
-	Key      string
-	Callback func(string, slack.InteractionCallback, http.ResponseWriter) error
+	ActionPath string
+	Callback   func(mSlack.RequestParams) error
 }
 
-func (f Feature) RunAction(routePath string, payload slack.InteractionCallback, w http.ResponseWriter) error {
+func (f Feature) RunAction(params mSlack.RequestParams) error {
 	for _, action := range f.Actions {
-		if actionIsMatchingToRoute(payload, action) {
-			return action.Callback(routePath, payload, w)
+		if action.ActionPath == params.ActionPath {
+			return action.Callback(params)
 		}
 	}
-	return nil
-}
-
-func actionIsMatchingToRoute(payload slack.InteractionCallback, action Action) bool {
-	switch payload.Type {
-	case slack.InteractionTypeBlockActions:
-		if len(payload.ActionCallback.BlockActions) == 0 {
-			return false
-		}
-		blockAction := payload.ActionCallback.BlockActions[0]
-		path := strings.Split(blockAction.BlockID, ":")[1]
-		return path == action.Key
-	case slack.InteractionTypeViewSubmission:
-		path := strings.Split(payload.View.CallbackID, ":")[1]
-		return path == action.Key
-	}
-	return false
+	return errors.New("タイプが一致しません。")
 }

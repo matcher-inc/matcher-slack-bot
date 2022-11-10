@@ -1,6 +1,7 @@
 package mSlack
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -24,9 +25,9 @@ func ParseSlash(r *http.Request) (params *RequestParams, err error) {
 	}
 
 	params = &RequestParams{
-		RequestKey: slash.Command[1:],
-		ChannelID:  slash.ChannelID,
-		UserID:     slash.UserID,
+		FeaturePath: slash.Command[1:],
+		ChannelID:   slash.ChannelID,
+		UserID:      slash.UserID,
 	}
 	return
 }
@@ -63,14 +64,80 @@ func ParseEvent(r *http.Request) (params *RequestParams, requestBody []byte, eve
 		switch data := eventsAPIEvent.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			params = &RequestParams{
-				RequestKey: strings.Split(data.Text, " ")[1],
-				UserID:     data.User,
-				ChannelID:  data.Channel,
+				FeaturePath: strings.Split(data.Text, " ")[1],
+				UserID:      data.User,
+				ChannelID:   data.Channel,
 			}
 			eventType = AppMentionEvent
 			return
 		}
 	}
 	err = errors.New("Failed Parse Event")
+	return
+}
+
+func ParseAction(r *http.Request) (params *RequestParams, err error) {
+	verifier, err := verificateSigningSecret(r)
+	if err != nil {
+		return
+	}
+
+	bodyReader := io.TeeReader(r.Body, &verifier)
+	body, err := ioutil.ReadAll(bodyReader)
+	if err != nil {
+		return
+	}
+
+	err = verifier.Ensure()
+	if err != nil {
+		return
+	}
+
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+	var payload *slack.InteractionCallback
+	err = json.Unmarshal([]byte(r.FormValue("payload")), &payload)
+	if err != nil {
+		return
+	}
+
+	switch payload.Type {
+	case slack.InteractionTypeBlockActions:
+		if len(payload.ActionCallback.BlockActions) == 0 {
+			err = errors.New("Invalid action")
+			return
+		}
+		action := payload.ActionCallback.BlockActions[0]
+		value := action.Value
+		if value == "" {
+			value = action.SelectedOption.Value
+		}
+		path := strings.Split(action.BlockID, ":")
+		params = &RequestParams{
+			FeaturePath: path[0],
+			ActionPath:  path[1],
+			UserID:      payload.User.ID,
+			ChannelID:   payload.Channel.ID,
+			ActionParams: ActionParams{
+				Value: value,
+			},
+			responseURL: payload.ResponseURL,
+		}
+		return
+	case slack.InteractionTypeViewSubmission:
+		path := strings.Split(payload.View.CallbackID, ":")
+		params = &RequestParams{
+			FeaturePath: path[0],
+			ActionPath:  path[1],
+			UserID:      payload.User.ID,
+			ChannelID:   payload.Channel.ID,
+			TriggerID:   payload.TriggerID,
+			ActionParams: ActionParams{
+				Values: payload.View.State.Values,
+			},
+		}
+		return
+	}
+	err = errors.New("Failed Parse Action")
 	return
 }
