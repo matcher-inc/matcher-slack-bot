@@ -9,9 +9,21 @@ type buttonType struct {
 }
 
 type Button struct {
-	ActionKey string
-	Text      string
-	Type      buttonType
+	ActionPath string
+	Value      string
+	Text       string
+	Type       buttonType
+}
+
+type Buttons struct {
+	ActionPath string
+	Options    []ButtonsOption
+}
+
+type ButtonsOption struct {
+	Label string
+	Value string
+	Type  buttonType
 }
 
 var (
@@ -20,8 +32,23 @@ var (
 )
 
 func (b Button) toBlock(params RequestParams) slack.Block {
-	confirmButtonText := slack.NewTextBlockObject(slack.PlainTextType, b.Text, false, false)
-	confirmButton := slack.NewButtonBlockElement("", "", confirmButtonText)
-	confirmButton.WithStyle(b.Type.value)
-	return slack.NewActionBlock(params.FeaturePath+":"+b.ActionKey, confirmButton)
+	buttonText := slack.NewTextBlockObject(slack.PlainTextType, b.Text, false, false)
+	button := slack.NewButtonBlockElement("", b.Value, buttonText)
+	button.WithStyle(b.Type.value)
+	return slack.NewActionBlock(params.FeaturePath+":"+b.ActionPath, button)
+}
+
+func (o ButtonsOption) toOptionBlock() slack.BlockElement {
+	buttonText := slack.NewTextBlockObject(slack.PlainTextType, o.Label, false, false)
+	button := slack.NewButtonBlockElement("", o.Value, buttonText)
+	button.WithStyle(o.Type.value)
+	return *button
+}
+
+func (bs Buttons) toBlock(params RequestParams) slack.Block {
+	options := make([]slack.BlockElement, len(bs.Options))
+	for i, option := range bs.Options {
+		options[i] = option.toOptionBlock()
+	}
+	return slack.NewActionBlock(params.FeaturePath+":"+bs.ActionPath, options...)
 }

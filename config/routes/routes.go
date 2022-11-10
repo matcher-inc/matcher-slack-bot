@@ -13,7 +13,7 @@ type Route struct {
 }
 
 var rounting = []Route{
-	{Path: "deploy", Feature: deploy.Feature},
+	{Path: "deployy", Feature: deploy.Feature},
 	{Path: "dialog", Feature: dialog.Feature},
 }
 

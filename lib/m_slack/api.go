@@ -30,3 +30,14 @@ func PostDirect(params RequestParams, blocks Blocks) (err error) {
 	_, _, err = client.PostMessage(params.UserID, options)
 	return
 }
+
+func PostResponse(params RequestParams, blocks Blocks) (err error) {
+	options := blocks.toMsgOption(params)
+	_, _, _, err = client.SendMessage("", slack.MsgOptionReplaceOriginal(params.responseURL), options)
+	return
+}
+
+func DeleteOriginal(params RequestParams) (err error) {
+	_, _, _, err = client.SendMessage("", slack.MsgOptionDeleteOriginal(params.responseURL))
+	return
+}

@@ -5,7 +5,7 @@ import (
 )
 
 type Select struct {
-	ActionKey   string
+	ActionPath  string
 	Placeholder string
 	Options     []Option
 }
@@ -20,7 +20,7 @@ func (s Select) optionObjects(params RequestParams) []*slack.OptionBlockObject {
 
 func (s Select) toBlock(params RequestParams) slack.Block {
 	selectMenu := s.toBlockElement(params)
-	return slack.NewActionBlock(params.FeaturePath+":"+s.ActionKey, selectMenu)
+	return slack.NewActionBlock(params.FeaturePath+":"+s.ActionPath, selectMenu)
 }
 
 func (s Select) toBlockElement(params RequestParams) slack.BlockElement {
@@ -28,7 +28,7 @@ func (s Select) toBlockElement(params RequestParams) slack.BlockElement {
 	return slack.NewOptionsSelectBlockElement(
 		slack.OptTypeStatic,
 		placeholder,
-		params.FeaturePath+":"+s.ActionKey,
+		params.FeaturePath+":"+s.ActionPath,
 		s.optionObjects(params)...,
 	)
 }
