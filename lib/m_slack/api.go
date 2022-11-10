@@ -30,3 +30,10 @@ func PostDirect(params RequestParams, blocks Blocks) (err error) {
 	_, _, err = client.PostMessage(params.UserID, options)
 	return
 }
+
+// モーダルなどを開く
+// TriggerIDはとりあえず、後でparamsに含める
+func OpenView(params RequestParams, modal Modal, TriggerID string) (err error) {
+	_, err = client.OpenView(TriggerID, modal.ToViewRequest(params))
+	return
+}

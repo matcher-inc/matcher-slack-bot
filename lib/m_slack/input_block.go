@@ -15,6 +15,8 @@ type Input struct {
 }
 
 func (i Input) toBlock(params RequestParams) slack.Block {
-	label := slack.NewTextBlockObject(slack.MarkdownType, i.Label, false, false)
+	// NOTE: modalで使うとき、slack.MarkdownTypeだとinvalid_arguments
+	// label := slack.NewTextBlockObject(slack.MarkdownType, i.Label, false, false)
+	label := slack.NewTextBlockObject(slack.PlainTextType, i.Label, false, false)
 	return slack.NewInputBlock(i.BlockID, label, i.Element.toBlockElement(params))
 }

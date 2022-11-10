@@ -24,10 +24,11 @@ func (s Select) toBlock(params RequestParams) slack.Block {
 }
 
 func (s Select) toBlockElement(params RequestParams) slack.BlockElement {
-	placeholder := slack.NewTextBlockObject(slack.PlainTextType, s.Placeholder, false, false)
 	return slack.NewOptionsSelectBlockElement(
 		slack.OptTypeStatic,
-		placeholder,
+		// NOTE: modalで使うとき、placeholderがあるとinvalid_arguments
+		// slack.NewTextBlockObject(slack.PlainTextType, s.Placeholder, false, false)
+		nil,
 		params.RequestKey+":"+s.ActionKey,
 		s.optionObjects(params)...,
 	)
