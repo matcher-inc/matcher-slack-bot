@@ -3,12 +3,9 @@ package actions
 import (
 	"encoding/json"
 	"errors"
-	"go-bot-test/lib/api"
 	mSlack "go-bot-test/lib/m_slack"
 	"strconv"
 	"time"
-
-	"github.com/slack-go/slack"
 )
 
 func receiveFormCallback(params mSlack.RequestParams) error {
@@ -64,50 +61,45 @@ func receiveFormCallback(params mSlack.RequestParams) error {
 
 	// payload.View.ExternalID, payload.View.ID のどちらかだけを渡す
 	// 両方渡すとargumentserror
-	if _, err := api.Shared.UpdateView(*modal, params.ExternalID, "", ""); err != nil {
+	if err := mSlack.UpdateView(params, *modal); err != nil {
 		return errors.New("エラー")
 	}
 	return nil
 }
 
-func createConfirmationModalBySDK(menu, steak, note string) *slack.ModalViewRequest {
+func createConfirmationModalBySDK(menu, steak, note string) *mSlack.Modal {
 
-	// Create a modal.
-	// - Text section
-	titleText := slack.NewTextBlockObject("mrkdwn", ":wave: *🐷確認するよ confirmation*", false, false)
-	titleTextSection := slack.NewSectionBlock(titleText, nil, nil)
+	dividerBlock := mSlack.Divider{}
+	sMenuTextSection := mSlack.Text{
+		Body: "*Menu :hamburger:*\n ... " + menu,
+	}
 
-	// Divider
-	dividerBlock := slack.NewDividerBlock()
+	sSteakTextSection := mSlack.Text{
+		Body: "*How do you like your steak?*\n" + steak,
+	}
+	sNoteTextSection := mSlack.Text{
+		Body: "*Anything else you want to tell us?*\n" + note,
+	}
+	amountTextSection := mSlack.Text{
+		Body: "*Amount :moneybag:*\n$ 700",
+	}
 
-	// - Text section
-	sMenuText := slack.NewTextBlockObject("mrkdwn", "*Menu :hamburger:*\n ... "+menu, false, false)
-	sMenuTextSection := slack.NewSectionBlock(sMenuText, nil, nil)
+	chipInput := mSlack.Input{
+		BlockID: "action_id_chip",
+		Label:   "Which one you want to have?",
+		Element: mSlack.PlainText{
+			ActionKey: "action_id_chip",
+			Multiline: false,
+		},
+		Hint:     "Thank you for your kindness!",
+		Optional: true,
+	}
 
-	// - Text section
-	sSteakText := slack.NewTextBlockObject("mrkdwn", "*How do you like your steak?*\n"+steak, false, false)
-	sSteakTextSection := slack.NewSectionBlock(sSteakText, nil, nil)
-
-	// - Text section
-	sNoteText := slack.NewTextBlockObject("mrkdwn", "*Anything else you want to tell us?*\n"+note, false, false)
-	sNoteTextSection := slack.NewSectionBlock(sNoteText, nil, nil)
-
-	// - Text section
-	amountText := slack.NewTextBlockObject("mrkdwn", "*Amount :moneybag:*\n$ 700", false, false)
-	amountTextSection := slack.NewSectionBlock(amountText, nil, nil)
-
-	// - Input with plain_text_input
-	chipText := slack.NewTextBlockObject("plain_text", "Chip ($)", false, false)
-	chipInputElement := slack.NewPlainTextInputBlockElement(nil, "action_id_chip")
-	chipInput := slack.NewInputBlock("block_id_chip", chipText, chipInputElement)
-	chipHintText := slack.NewTextBlockObject("plain_text", "Thank you for your kindness!", false, false)
-	chipInput.Hint = chipHintText
-	chipInput.Optional = true
-
-	// Blocks
-	blocks := slack.Blocks{
-		BlockSet: []slack.Block{
-			titleTextSection,
+	modal := mSlack.Modal{
+		Title:        "🐷確認するよ confirmation*",
+		CloseButton:  "キャンセル",
+		SubmitButton: "送信",
+		Blocks: []mSlack.Block{
 			dividerBlock,
 			sMenuTextSection,
 			sSteakTextSection,
@@ -117,16 +109,6 @@ func createConfirmationModalBySDK(menu, steak, note string) *slack.ModalViewRequ
 			chipInput,
 		},
 	}
-
-	// ModalView
-	modal := slack.ModalViewRequest{
-		Type:   slack.ViewType("modal"),
-		Title:  slack.NewTextBlockObject("plain_text", "Hungryman Hamburgers", false, false),
-		Close:  slack.NewTextBlockObject("plain_text", "Cancel", false, false),
-		Submit: slack.NewTextBlockObject("plain_text", "Order!", false, false),
-		Blocks: blocks,
-	}
-
 	return &modal
 }
 

@@ -44,7 +44,15 @@ func DeleteOriginal(params RequestParams) (err error) {
 
 // モーダルなどを開く
 // TriggerIDはとりあえず、後でparamsに含める
-func OpenView(params RequestParams, modal Modal, TriggerID string) (err error) {
-	_, err = client.OpenView(TriggerID, modal.ToViewRequest(params))
+func OpenView(params RequestParams, modal Modal) (err error) {
+	_, err = client.OpenView(params.TriggerID, modal.ToViewRequest(params))
+	return
+}
+
+// モーダルの更新
+func UpdateView(params RequestParams, modal Modal) (err error) {
+	// payload.View.ExternalID, payload.View.ID のどちらかだけを渡す
+	// 両方渡すとargumentserror
+	_, err = client.UpdateView(modal.ToViewRequest(params), params.ExternalID, "", "")
 	return
 }

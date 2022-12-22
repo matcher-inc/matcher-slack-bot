@@ -30,7 +30,7 @@ func showDialogCallback(params mSlack.RequestParams) error {
 	}
 	modal.PrivateMetadata = string(bytes)
 
-	if err := mSlack.OpenView(params, *modal, params.TriggerID); err != nil {
+	if err := mSlack.OpenView(params, *modal); err != nil {
 		log.Println(err)
 		return errors.New("エラー")
 	}
