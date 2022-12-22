@@ -76,7 +76,7 @@ func ParseEvent(r *http.Request) (params *RequestParams, requestBody []byte, eve
 	return
 }
 
-func ParseAction(r *http.Request) (params *RequestParams, err error) {
+func ParseAction(w http.ResponseWriter, r *http.Request) (params *RequestParams, err error) {
 	verifier, err := verificateSigningSecret(r)
 	if err != nil {
 		return
@@ -126,6 +126,7 @@ func ParseAction(r *http.Request) (params *RequestParams, err error) {
 			PrivateMetadata: payload.View.PrivateMetadata,
 			ViewID:          payload.View.ID,
 			ExternalID:      payload.View.ExternalID,
+			ResponseWriter:  w,
 		}
 		return
 	case slack.InteractionTypeViewSubmission:
@@ -142,6 +143,7 @@ func ParseAction(r *http.Request) (params *RequestParams, err error) {
 			PrivateMetadata: payload.View.PrivateMetadata,
 			ViewID:          payload.View.ID,
 			ExternalID:      payload.View.ExternalID,
+			ResponseWriter:  w,
 		}
 		return
 	}

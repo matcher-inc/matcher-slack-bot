@@ -1,6 +1,10 @@
 package mSlack
 
-import "github.com/slack-go/slack"
+import (
+	"net/http"
+
+	"github.com/slack-go/slack"
+)
 
 type RequestParams struct {
 	Token string
@@ -17,6 +21,7 @@ type RequestParams struct {
 	ActionParams    ActionParams
 	PrivateMetadata string
 	responseURL     string
+	ResponseWriter  http.ResponseWriter
 }
 
 type ActionParams struct {

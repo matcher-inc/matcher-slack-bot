@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"go-bot-test/lib/api"
 	mSlack "go-bot-test/lib/m_slack"
+	"net/http"
 	"strconv"
 
 	"github.com/slack-go/slack"
@@ -45,14 +46,14 @@ func ConfirmCallback(params mSlack.RequestParams) error {
 		return errors.New("エラー")
 	}
 
-	// resAction := slack.NewClearViewSubmissionResponse()
-	// rBytes, err := json.Marshal(resAction)
-	// if err != nil {
-	// 	return errors.New("エラー")
-	// }
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write(rBytes)
+	resAction := slack.NewClearViewSubmissionResponse()
+	rBytes, err := json.Marshal(resAction)
+	if err != nil {
+		return errors.New("エラー")
+	}
+	params.ResponseWriter.Header().Set("Content-Type", "application/json")
+	params.ResponseWriter.WriteHeader(http.StatusOK)
+	params.ResponseWriter.Write(rBytes)
 	return nil
 
 }

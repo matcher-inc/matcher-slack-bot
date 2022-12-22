@@ -7,7 +7,7 @@ import (
 )
 
 func handleAction(w http.ResponseWriter, r *http.Request) {
-	params, err := mSlack.ParseAction(r)
+	params, err := mSlack.ParseAction(w, r)
 	if err != nil {
 		raiseError(w, err)
 		return
